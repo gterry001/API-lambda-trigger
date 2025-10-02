@@ -1,0 +1,28 @@
+version: 0.2
+
+env:
+  variables:
+    AWS_ACCOUNT_ID: "TU_ACCOUNT_ID"        # ej 123456789012
+    AWS_DEFAULT_REGION: "eu-north-1"
+    REPOSITORY_URI: "123456789012.dkr.ecr.eu-north-1.amazonaws.com/lambda-a"
+    IMAGE_TAG: "latest"
+
+phases:
+  pre_build:
+    commands:
+      - echo "Login en ECR..."
+      - aws --version
+      - aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $REPOSITORY_URI
+  build:
+    commands:
+      - echo "Estructura del workspace:" && ls -R
+      - echo "Construyendo imagen..."
+      - docker build --no-cache -t $REPOSITORY_URI:$IMAGE_TAG .
+  post_build:
+    commands:
+      - echo "Pusheando imagen a ECR..."
+      - docker push $REPOSITORY_URI:$IMAGE_TAG
+artifacts:
+  files:
+    - '**/*'
+  discard-paths: yes
