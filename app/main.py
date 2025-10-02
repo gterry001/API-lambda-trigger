@@ -17,7 +17,7 @@ app = FastAPI(title="Job Orchestrator (Lambda A)")
 def root():
     return {"message": "API is running (Lambda A)"}
 
-@app.post("/start-job")
+@app.get("/start-job")
 def start_job():
     job_id = str(uuid4())
 
@@ -49,3 +49,4 @@ def get_result(job_id: str):
         raise
 
 handler = Mangum(app)
+
